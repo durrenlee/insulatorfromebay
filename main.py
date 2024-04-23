@@ -108,21 +108,20 @@ async def scrape_search(
     if max_pages == 1:
         return results
     # find total amount of results for concurrent pagination
-    total_results = first_page.selector.css(".srp-controls__count-heading>span::text").get()
-    total_results = int(total_results.replace(",", ""))
-    total_pages = math.ceil(total_results / items_per_page)
-    if total_pages > max_pages:
-        total_pages = max_pages
-    other_pages = [session.get(make_request(page=i)) for i in range(2, total_pages + 1)]
-    for response in asyncio.as_completed(other_pages):
-        response = await response
-        try:
-            results.extend(parse_search(response))
-        except Exception as e:
-            print(f"failed to scrape search page {response.url}")
+    # total_results = first_page.selector.css(".srp-controls__count-heading>span::text").get()
+    # total_results = int(total_results.replace(",", ""))
+    # total_pages = math.ceil(total_results / items_per_page)
+    # if total_pages > max_pages:
+    #     total_pages = max_pages
+    # other_pages = [session.get(make_request(page=i)) for i in range(2, total_pages + 1)]
+    # for response in asyncio.as_completed(other_pages):
+    #     response = await response
+    #     try:
+    #         results.extend(parse_search(response))
+    #     except Exception as e:
+    #         print(f"failed to scrape search page {response.url}")
     return results
 
-# Example run:
 if __name__ == "__main__":
     product_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\products_glass_2.json"
     if not os.path.exists(product_list_path):
