@@ -123,32 +123,78 @@ async def scrape_search(
     return results
 
 if __name__ == "__main__":
-    product_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\products_glass_2.json"
-    if not os.path.exists(product_list_path):
-        print(product_list_path + " does not exist")
+    # product_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\products_glass_2.json"
+    # if not os.path.exists(product_list_path):
+    #     print(product_list_path + " does not exist")
         # get products by search keyword
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        result = asyncio.run(scrape_search("glass insulator", 2))
-        with open(product_list_path, 'w') as f:
-            json.dump(result, f)
+        # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        # result = asyncio.run(scrape_search("glass insulator", 2))
+        # with open(product_list_path, 'w') as f:
+        #     json.dump(result, f)
 
     # load data from json file
-    products_details_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\products_details_glass_2.json"
-    if not os.path.exists(products_details_list_path):
-        with open(product_list_path, 'r') as f:
-            product_list = json.load(f)
-            # get ebay product details and save to json file
-            product_details = get_all_products_detail(product_list)
-            if len(product_details) > 0:
-                with open(products_details_list_path, 'w') as f:
-                    json.dump(product_details, f)
+    # products_details_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\products_details_glass_2.json"
+    # if not os.path.exists(products_details_list_path):
+    #     with open(product_list_path, 'r') as f:
+    #         product_list = json.load(f)
+    #         # get ebay product details and save to json file
+    #         product_details = get_all_products_detail(product_list)
+    #         if len(product_details) > 0:
+    #             with open(products_details_list_path, 'w') as f:
+    #                 json.dump(product_details, f)
 
     # get images from ebay and create corresponding markings json
-    images_info_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\images_info_glass_2.json"
-    if not os.path.exists(images_info_list_path):
-        with open(products_details_list_path, 'r') as f:
-            products_details = json.load(f)
-            products_images = get_all_images(products_details)
-            if len(products_images) > 0:
-                with open(images_info_list_path, 'w') as f:
-                    json.dump(products_images, f)
+    # images_info_list_path = "C:\\Users\\86131\\Desktop\\ebaydata\\images_info_glass_2.json"
+    # if not os.path.exists(images_info_list_path):
+    #     with open(products_details_list_path, 'r') as f:
+    #         products_details = json.load(f)
+    #         products_images = get_all_images(products_details)
+    #         if len(products_images) > 0:
+    #             with open(images_info_list_path, 'w') as f:
+    #                 json.dump(products_images, f)
+
+    import random
+
+    labels_path = "D:\\github\\marked-defect-insulator-ds\\labels-multiple.json"
+    labels_new_path = "D:\\github\\marked-defect-insulator-ds\\labels-defect.json"
+    defect_file_list = []
+    with open(labels_path, 'r') as f:
+        labels = json.load(f)
+        indexes = [1, 2, 3, 4, 5]
+        same_count = 0
+        last_file = ''
+        add_flag = 0
+        random_value = 0
+        for label in labels:
+
+            print('label image:' + label['image'])
+
+            if last_file == '':
+                last_file = label['image']
+
+                same_count = 1
+                random_value = random.choice(indexes)
+
+            else:
+                if label['image'] != last_file:
+                    last_file = label['image']
+
+                    same_count = 1
+                    random_value = random.choice(indexes)
+
+                else:
+                    same_count = same_count + 1
+
+            if random_value == same_count and same_count != 0:
+                print('random_value == same_count random_value:' + str(random_value) + ' same_count:' + str(same_count))
+                item = {}
+                item["image"] = label["image"]
+                item["caption"] = label["caption"]
+                item["image_id"] = label["image_id"]
+                defect_file_list.append(item)
+                add_flag = 0
+                random_value = 0
+
+    if not os.path.exists(labels_new_path):
+        with open(labels_new_path, 'w') as f:
+            json.dump(defect_file_list, f)
